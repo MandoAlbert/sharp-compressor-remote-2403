@@ -47,6 +47,7 @@ export default class CompressorHandler {
       response = { error: "Unexpected error" }
     }
 
+    // Clean up
     setTimeout(() => {
       const dirs = [AppConst.downloadsDir, AppConst.outputDir];
       for (const dir of dirs) {
@@ -54,7 +55,7 @@ export default class CompressorHandler {
         const count = IOUtils.clearDir(dir);
         console.log(`----- * End Cleaning, removed: ${count} * -----`);
       }
-    }, 1000);
+    }, 30000);
 
     res.json(response);
   }
