@@ -21,7 +21,7 @@ export default class Compressor {
     const filename = `img_${new Date().getTime()}.${fileExt}`;
 
     try {
-      console.log(`>> Downloading: ${filename}`);
+      console.log(`>> Downloading: ${url}`);
       await DownloadUtils.downloadFile(url, `${AppConst.sourceDir}/${filename}`);
 
       // List downloaded image
