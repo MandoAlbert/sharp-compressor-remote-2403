@@ -1,15 +1,28 @@
-// TODO: MOVE TO .env
-const port = 3000;
-// const baseUrl = `http://localhost:${port}`; // Local
-const baseUrl = `https://sharp-compressor-remote-2403.onrender.com`; // render.com
+const env = {
+  port: process.env.PORT,
+  baseUrl: process.env.BASE_URL,
+};
+
+const directories = {
+  source: 'source',
+  output: 'output',
+};
 
 const AppConst = {
-  port: port,
-  downloadsDir: './public/downloads',
-  outputDir: './public/output',
-  baseUrl: baseUrl,
-  outputBase: `${baseUrl}/output`,
-  downloadsBase: `${baseUrl}/downloads`,
+  environments: {
+    development: 'development',
+    production: 'production'
+  },
+  port: env.port,
+  baseUrl: env.baseUrl,
+  sourceDir: `./public/${directories.source}`,
+  outputDir: `./public/${directories.output}`,
+  sourceBase: `${env.baseUrl}/${directories.source}`,
+  outputBase: `${env.baseUrl}/${directories.output}`,
+  resultFormats: {
+    detailed: 'detailed',
+    imageUrl: 'imageUrl',
+  }
 };
 
 export default AppConst;

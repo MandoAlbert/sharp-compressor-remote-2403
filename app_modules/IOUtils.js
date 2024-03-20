@@ -2,7 +2,7 @@ import { readdirSync, mkdirSync, existsSync, statSync, createWriteStream, rmSync
 
 export default class IOUtils {
   static listFiles(path) {
-    if (!path || path.length == 0) return null;
+    if (!path || path.length == 0 || !existsSync(path)) return null;
 
     try {
       return readdirSync(path);
@@ -64,6 +64,19 @@ export default class IOUtils {
     }
 
     return counter;
+  }
+
+  static deleteFile(filePath) {
+    if (!filePath || !existsSync(path)) return false;
+
+    try {
+      rmSync(filePath);
+      return true;
+    } catch (error) {
+      IOUtils.logError(error.stack, `Error while deleting ${filePath}`);
+      // console.error(error);
+    }
+    return false;
   }
 
   static logError(error, description = '') {

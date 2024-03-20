@@ -9,19 +9,20 @@ export default class Compressor {
     const targetFiles = [];
 
     // Prepare download directory
-    if (!IOUtils.createFolder(AppConst.downloadsDir)) {
-      IOUtils.logError(`>> Could not create the downloads folder ${AppConst.downloadsDir}`);
-      // console.error(`>> Could not create the downloads folder ${AppConst.downloadsDir}`);
+    if (!IOUtils.createFolder(AppConst.sourceDir)) {
+      IOUtils.logError(`>> Could not create the source folder ${AppConst.sourceDir}`);
+      // console.error(`>> Could not create the source folder ${AppConst.sourceDir}`);
       return;
     }
 
     // Download image
+    // TODO: HANDLE URL WITH NO EXTENSION
     const fileExt = IOUtils.getExtension(url);
     const filename = `img_${new Date().getTime()}.${fileExt}`;
 
     try {
       console.log(`>> Downloading: ${filename}`);
-      await DownloadUtils.downloadFile(url, `${AppConst.downloadsDir}/${filename}`);
+      await DownloadUtils.downloadFile(url, `${AppConst.sourceDir}/${filename}`);
 
       // List downloaded image
       targetFiles.push(filename);
@@ -45,7 +46,7 @@ export default class Compressor {
     // Process target files
     const results = await this.#processFiles(
       targetFiles,
-      AppConst.downloadsDir,
+      AppConst.sourceDir,
       AppConst.outputDir,
       quality,
       itemPrefix,
@@ -53,7 +54,7 @@ export default class Compressor {
     );
 
     // Publish results
-    this.#publishResults(results);
+    // this.#logResults(results);
 
     return results;
   }
@@ -82,7 +83,7 @@ export default class Compressor {
     );
 
     // Publish results
-    this.#publishResults(results);
+    this.#logResults(results);
 
     return results;
   }
@@ -137,7 +138,7 @@ export default class Compressor {
     return results;
   }
 
-  static #publishResults(results) {
+  static #logResults(results) {
     const successCount = results.filter(item => item.success).length;
     const failedCount = results.length - successCount;
 
