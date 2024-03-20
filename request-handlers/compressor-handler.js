@@ -24,7 +24,7 @@ export default class CompressorHandler {
       if (resultFormat === AppConst.resultFormats.imageUrl) {
         // Expected one image only. Process can fail and no images found.
         if (results && results.length && results[0].output) {
-          response = `${AppConst.outputBase}/${results[0].output}`;
+          response = `https://${AppConst.outputBase}/${results[0].output}`;
         }
       } else {
         // default is `AppConst.resultFormats.detailed`

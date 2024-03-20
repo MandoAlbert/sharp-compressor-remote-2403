@@ -67,7 +67,7 @@ export default class IOUtils {
   }
 
   static deleteFile(filePath) {
-    if (!filePath || !existsSync(path)) return false;
+    if (!filePath || !existsSync(filePath)) return false;
 
     try {
       rmSync(filePath);
