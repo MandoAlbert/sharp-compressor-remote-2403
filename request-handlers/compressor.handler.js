@@ -2,9 +2,9 @@ import Compressor from "../app_modules/Compressor.js";
 import IOUtils from "../app_modules/IOUtils.js";
 import AppConst from '../shared/app.const.js'
 import ValidationUtils from "../app_modules/ValidationUtils.js";
-import AppDefaults from './../shared/app.defaults.js';
+import AppDefaults from '../shared/app.defaults.js';
 import AppUtils from "../app_modules/AppUtils.js";
-import CleanupUtils from './../app_modules/CleanupUtils.js';
+import CleanupUtils from '../app_modules/CleanupUtils.js';
 
 export default class CompressorHandler {
   static async compress(req, res) {
@@ -24,7 +24,10 @@ export default class CompressorHandler {
       if (resultFormat === AppConst.resultFormats.imageUrl) {
         // Expected one image only. Process can fail and no images found.
         if (results && results.length && results[0].output) {
-          response = `${AppConst.outputBase}/${results[0].output}`;
+          response = {
+            success: true,
+            result: { output: `${AppConst.outputBase}/${results[0].output}` },
+          };
         }
       } else {
         // default is `AppConst.resultFormats.detailed`
@@ -39,7 +42,7 @@ export default class CompressorHandler {
             `${AppConst.outputDir}/${results[0].output}`,
           ]);
         }
-      }, AppDefaults.compressor.timeout);
+      }, AppDefaults.compressor.timeout * 1000);
     } catch (error) {
       IOUtils.logError(error.stack, "Unexpected error");
       response = { error: "Unexpected error" }
@@ -62,7 +65,7 @@ export default class CompressorHandler {
 
     // Options [Optional]
     let quality = req.body.quality;  // int range[10:100]
-    let prefix = req.body.prefix;  // string length[1, 10]
+    let prefix = req.body.prefix;  // string length[1:10]
     let resultFormat = req.body.resultFormat;  // string [AppConst.resultFormats]
 
     if (!ValidationUtils.isInteger(quality, 10, 100)) {
@@ -83,20 +86,27 @@ export default class CompressorHandler {
   static formatDetailedResult(input, results) {
     const { url, quality, prefix } = input;
 
-    const formattedResults = results.map(item => ({
-      original: `${AppConst.sourceBase}/${item.source}`,
-      output: `${AppConst.outputBase}/${item.output}`,
-      success: item.success,
-      originalSize: AppUtils.formatSize(item.originalSize),
-      outputSize: AppUtils.formatSize(item.compressSize),
-      saved: AppUtils.formatSize(item.sizeDiff),
-    }));
+    const result = results.length && results[0];
+    let formattedResult;
+    if (result) {
+      formattedResult = {
+        original: `${AppConst.sourceBase}/${result.source}`,
+        output: `${AppConst.outputBase}/${result.output}`,
+        success: result.success,
+        originalSizeBytes: result.originalSize,
+        originalSize: AppUtils.formatSize(result.originalSize),
+        outputSizeBytes: result.compressSize,
+        outputSize: AppUtils.formatSize(result.compressSize),
+        saved: AppUtils.formatSize(result.sizeDiff),
+      }
+    }
 
     return {
+      success: true,
       url: url,
       quality: quality,
       prefix: prefix,
-      results: formattedResults,
+      result: formattedResult,
     };
   }
 }

@@ -1,11 +1,13 @@
-import { readdirSync, mkdirSync, existsSync, statSync, createWriteStream, rmSync } from 'fs';
+import fs from 'fs';
+import AppConst from '../shared/app.const.js';
+import path from 'path';
 
 export default class IOUtils {
   static listFiles(path) {
-    if (!path || path.length == 0 || !existsSync(path)) return null;
+    if (!path || path.length == 0 || !fs.existsSync(path)) return null;
 
     try {
-      return readdirSync(path);
+      return fs.readdirSync(path);
     } catch (error) {
       IOUtils.logError(error.stack, `Error while listing dir ${path}`);
       // console.error(error.message);
@@ -25,15 +27,15 @@ export default class IOUtils {
     const extension = file.substring(dotIndex + 1, file.length);
     const filename = file.substring(0, dotIndex);
 
-    const { size } = statSync(path + '/' + file);
+    const { size } = fs.statSync(path + '/' + file);
 
     return { filename, extension, size }
   }
 
   static createFolder(path) {
     try {
-      if (!existsSync(path)) {
-        mkdirSync(path);
+      if (!fs.existsSync(path)) {
+        fs.mkdirSync(path);
       }
       return true;
     } catch (error) {
@@ -54,7 +56,7 @@ export default class IOUtils {
         const filePath = `${path}/${file}`;
         console.log(`>> Deleting: ${filePath}`);
         try {
-          rmSync(filePath);
+          fs.rmSync(filePath);
           counter++;
         } catch (error) {
           IOUtils.logError(error.stack, `Error while deleting ${filePath}`);
@@ -67,10 +69,10 @@ export default class IOUtils {
   }
 
   static deleteFile(filePath) {
-    if (!filePath || !existsSync(filePath)) return false;
+    if (!filePath || !fs.existsSync(filePath)) return false;
 
     try {
-      rmSync(filePath);
+      fs.rmSync(filePath);
       return true;
     } catch (error) {
       IOUtils.logError(error.stack, `Error while deleting ${filePath}`);
@@ -84,8 +86,30 @@ export default class IOUtils {
       return;
     }
 
-    const logStream = createWriteStream('./logs/errors.txt', { flags: 'a' });
+    const errorFile = path.join(AppConst.files.errorsLogPath, AppConst.files.errorsLogFile);
+    const logStream = fs.createWriteStream(errorFile, { flags: 'a' });
     logStream.write(`${description}\n${error}\n\n-----\n\n`);
     logStream.end();
+  }
+
+  static readErrors() {
+    const errorFile = path.join(AppConst.files.errorsLogPath, AppConst.files.errorsLogFile);
+    if (fs.existsSync(errorFile)) {
+      return fs.readFileSync(errorFile);
+    }
+    return '';
+  }
+
+  static clearErrors() {
+    const errorFile = path.join(AppConst.files.errorsLogPath, AppConst.files.errorsLogFile);
+    if (fs.existsSync(errorFile)) {
+      try {
+        fs.writeFileSync(errorFile, '');
+        return true;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    return false;
   }
 }

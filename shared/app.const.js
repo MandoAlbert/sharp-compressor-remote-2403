@@ -22,7 +22,11 @@ const AppConst = {
   resultFormats: {
     detailed: 'detailed',
     imageUrl: 'imageUrl',
-  }
+  },
+  files: {
+    errorsLogPath: './logs',
+    errorsLogFile: 'errors.txt',
+  },
 };
 
 export default AppConst;

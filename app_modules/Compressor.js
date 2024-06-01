@@ -1,34 +1,36 @@
 import DownloadUtils from './DownloadUtils.js';
 import IOUtils from './IOUtils.js';
 import ImageUtils from './ImageUtils.js';
-import AppUtils from './AppUtils.js';
 import AppConst from '../shared/app.const.js'
+import CacheUtils from './CacheUtils.js';
 
 export default class Compressor {
   static async compressRemote(url, quality = 90, itemPrefix = '', namingTemplate = '') {
-    const targetFiles = [];
 
     // Prepare download directory
     if (!IOUtils.createFolder(AppConst.sourceDir)) {
       IOUtils.logError(`>> Could not create the source folder ${AppConst.sourceDir}`);
-      // console.error(`>> Could not create the source folder ${AppConst.sourceDir}`);
       return;
     }
 
-    // Download image
-    // TODO: HANDLE URL WITH NO EXTENSION
-    const fileExt = IOUtils.getExtension(url);
-    const filename = `img_${new Date().getTime()}.${fileExt}`;
+    const targetFiles = [];
 
-    try {
-      console.log(`>> Downloading: ${url}`);
-      await DownloadUtils.downloadFile(url, `${AppConst.sourceDir}/${filename}`);
+    // Check if image is in cache
+    let filename = CacheUtils.getCache(url);
 
-      // List downloaded image
+    if (filename) {
       targetFiles.push(filename);
-    } catch (error) {
-      IOUtils.logError(error.stack, `>> Error while downloading, url: ${filename}`)
-      // console.error(`>> Error while downloading ${filename}`);
+    } else {
+      // Download image
+      // TODO: HANDLE URL WITH NO EXTENSION
+      const filename = `img_${new Date().getTime()}.${IOUtils.getExtension(url)}`;
+      try {
+        await DownloadUtils.downloadFile(url, `${AppConst.sourceDir}/${filename}`);
+        CacheUtils.setCache(url, filename);
+        targetFiles.push(filename);
+      } catch (error) {
+        IOUtils.logError(error.stack, `>> Error while downloading, url: ${filename}`)
+      }
     }
 
     if (!targetFiles.length) {
@@ -39,7 +41,6 @@ export default class Compressor {
     // Prepare output directory
     if (!IOUtils.createFolder(AppConst.outputDir)) {
       IOUtils.logError(`>> Could not create the output folder ${AppConst.outputDir}`);
-      // console.error(`>> Could not create the output folder ${AppConst.outputDir}`);
       return;
     }
 
@@ -49,62 +50,11 @@ export default class Compressor {
       AppConst.sourceDir,
       AppConst.outputDir,
       quality,
-      itemPrefix,
+      `${itemPrefix}_${quality}_`,
       namingTemplate
     );
 
-    // Publish results
-    // this.#logResults(results);
-
     return results;
-  }
-
-  static async compressAll(inputPath, outputPath, sourceExt, quality = 90, itemPrefix = '', namingTemplate = '') {
-    // Get target files
-    const targetFiles = this.#listTargetFiles(inputPath, sourceExt);
-    if (!targetFiles) return;
-
-    // Prepare output directory
-    const created = IOUtils.createFolder(outputPath)
-    if (!created) {
-      IOUtils.logError(`>> Could not create the output folder ${outputPath}`);
-      // console.error(`>> Could not create the output folder ${outputPath}`);
-      return;
-    }
-
-    // Process target files
-    const results = await this.#processFiles(
-      targetFiles,
-      inputPath,
-      outputPath,
-      quality,
-      itemPrefix,
-      namingTemplate
-    );
-
-    // Publish results
-    this.#logResults(results);
-
-    return results;
-  }
-
-  static #listTargetFiles(inputPath, sourceExt) {
-    // List all files
-    const filesList = IOUtils.listFiles(inputPath);
-    if (!filesList) {
-      IOUtils.logError(`>> Could not list files ${inputPath}`);
-      // console.error(`>> Could not list files ${inputPath}`);
-      return null;
-    }
-
-    // Filter files to get the files with target extensions
-    const targetFiles = filesList.filter(file => sourceExt.includes(IOUtils.getExtension(`${inputPath}/${file}`)));
-    if (!targetFiles || targetFiles.length == 0) {
-      console.info('No files found with the chosen extensions');
-      return null;
-    }
-
-    return targetFiles;
   }
 
   static async #processFiles(targetFiles, inputPath, outputPath, quality, itemPrefix, namingTemplate) {
@@ -136,30 +86,5 @@ export default class Compressor {
     }
 
     return results;
-  }
-
-  static #logResults(results) {
-    const successCount = results.filter(item => item.success).length;
-    const failedCount = results.length - successCount;
-
-    const originalSize = results.reduce((acc, item) => acc + item.originalSize, 0);
-    const compressSize = results.reduce((acc, item) => acc + item.compressSize, 0);
-    const savedSize = originalSize - compressSize;
-    const compressRate = Math.round(compressSize / originalSize * 100);
-
-    //console.log(results);
-    console.log(`--- Process Done ---`);
-    console.log(
-      `Total: ${results.length}, `
-      + `Success: ${successCount}, `
-      + `Failed: ${failedCount}`);
-    console.log(
-      `Size before: ${AppUtils.formatSize(originalSize)}, `
-      + `Size after: ${AppUtils.formatSize(compressSize)}, `
-    );
-    console.log(
-      `Saved: ${AppUtils.formatSize(savedSize)}, `
-      + `Compress Rate: ${compressRate}%`
-    );
   }
 }
