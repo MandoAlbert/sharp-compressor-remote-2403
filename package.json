@@ -2,11 +2,11 @@
   "name": "sharp-compress",
   "version": "1.0.0",
   "description": "",
-  "main": "api/indexindex.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node --max-old-space-size=512 api/index.js",
-    "dev": "nodemon api/index.js",
+    "start": "node --max-old-space-size=512 index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nobody",
