@@ -38,7 +38,7 @@ export default class IOUtils {
       }
       return true;
     } catch (error) {
-      IOUtils.logError(error.stack, `Error while creating new dir ${path}`);
+      console.error(error.stack, `Error while creating new dir ${path}`);
     }
     return false;
   }
