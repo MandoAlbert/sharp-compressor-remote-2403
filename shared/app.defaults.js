@@ -7,7 +7,7 @@ const AppDefaults = {
     prefix: '',
     filename: '',
     allowedExtensions: ['jpg', 'jpeg', 'png', 'webp'],
-    timeout: 300, // 5 minutes
+    timeout: 60, // 5 minutes
     resultFormat: AppConst.resultFormats.detailed,
   }
 };
