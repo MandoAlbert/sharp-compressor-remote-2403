@@ -2,7 +2,8 @@ import AppConst from "./app.const.js";
 
 const AppDefaults = {
   compressor: {
-    quality: 80,
+    quality: 90,
+    maxDim: 6000,
     prefix: '',
     filename: '',
     allowedExtensions: ['jpg', 'jpeg', 'png', 'webp'],

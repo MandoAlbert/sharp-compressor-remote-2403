@@ -3,10 +3,10 @@ import IOUtils from './IOUtils.js';
 import ImageUtils from './ImageUtils.js';
 import AppConst from '../shared/app.const.js'
 import CacheUtils from './CacheUtils.js';
+import AppDefaults from '../shared/app.defaults.js';
 
 export default class Compressor {
-  static async compressRemote(url, quality = 90, itemPrefix = '', namingTemplate = '') {
-
+  static async compressRemote(url, quality, itemPrefix = '', namingTemplate = '') {
     // Prepare download directory
     if (!IOUtils.createFolder(AppConst.sourceDir)) {
       IOUtils.logError(`>> Could not create the source folder ${AppConst.sourceDir}`);
@@ -22,19 +22,22 @@ export default class Compressor {
       targetFiles.push(filename);
     } else {
       // Download image
-      // TODO: HANDLE URL WITH NO EXTENSION
-      const filename = `img_${new Date().getTime()}.${IOUtils.getExtension(url)}`;
+      let ext = IOUtils.getExtension(url);
+      if (!AppDefaults.compressor.allowedExtensions.includes(ext)) {
+        ext = 'jpg';
+      }
+      const filename = `img_${new Date().getTime()}.${ext}`;
       try {
         await DownloadUtils.downloadFile(url, `${AppConst.sourceDir}/${filename}`);
         CacheUtils.setCache(url, filename);
         targetFiles.push(filename);
       } catch (error) {
-        IOUtils.logError(error.stack, `>> Error while downloading, url: ${filename}`)
+        IOUtils.logError(error.stack, `>> Error while downloading, url: ${filename}`);
       }
     }
 
     if (!targetFiles.length) {
-      // console.error(`>> Could not target any images!`);
+      console.log('No target files to process');
       return;
     }
 
@@ -49,9 +52,9 @@ export default class Compressor {
       targetFiles,
       AppConst.sourceDir,
       AppConst.outputDir,
-      quality,
+      quality || AppDefaults.compressor.quality,
       `${itemPrefix}_${quality}_`,
-      namingTemplate
+      namingTemplate,
     );
 
     return results;
@@ -73,7 +76,9 @@ export default class Compressor {
       const info = await ImageUtils.toJPEG(
         `${inputPath}/${inputFile}`,
         `${outputPath}/${outputFile}`,
-        quality);
+        quality,
+        AppDefaults.compressor.maxDim,
+      );
 
       results.push({
         source: inputFile,

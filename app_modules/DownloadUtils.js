@@ -14,7 +14,7 @@ export default class DownloadUtils {
         // handle redirects
         if (code > 300 && code < 400 && !!response.headers.location) {
           return resolve(
-            downloadFile(response.headers.location, dist)
+            DownloadUtils.downloadFile(response.headers.location, dist)
           )
         }
 
@@ -27,7 +27,7 @@ export default class DownloadUtils {
 
         response.pipe(fileWriter)
       }).on('error', error => {
-        reject(error)
+        reject(error);
       })
     })
   }

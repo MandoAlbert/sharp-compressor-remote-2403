@@ -10,7 +10,6 @@ export default class IOUtils {
       return fs.readdirSync(path);
     } catch (error) {
       IOUtils.logError(error.stack, `Error while listing dir ${path}`);
-      // console.error(error.message);
     }
     return null;
   }
@@ -40,7 +39,6 @@ export default class IOUtils {
       return true;
     } catch (error) {
       IOUtils.logError(error.stack, `Error while creating new dir ${path}`);
-      // console.error(error);
     }
     return false;
   }
@@ -60,7 +58,6 @@ export default class IOUtils {
           counter++;
         } catch (error) {
           IOUtils.logError(error.stack, `Error while deleting ${filePath}`);
-          // console.error(error);
         }
       });
     }
@@ -76,7 +73,6 @@ export default class IOUtils {
       return true;
     } catch (error) {
       IOUtils.logError(error.stack, `Error while deleting ${filePath}`);
-      // console.error(error);
     }
     return false;
   }
@@ -107,7 +103,7 @@ export default class IOUtils {
         fs.writeFileSync(errorFile, '');
         return true;
       } catch (error) {
-        console.error(error);
+        IOUtils.logError(error.stack, `Error while clearing error logs ${errorFile}`);
       }
     }
     return false;

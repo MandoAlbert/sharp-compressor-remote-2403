@@ -22,7 +22,7 @@ app.get('/', async (req, res) => {
 // --- Protected Route To Compress Image ---
 /*
  * Accepts:
- *  url (string)
+ *  url (string) [required]
  *  quality (10:100)
  *  prefix (string)
  *  resultFormat (detailed|imageUrl)

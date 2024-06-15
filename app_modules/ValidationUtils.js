@@ -7,7 +7,7 @@ export default class ValidationUtils {
    * @param {number} max - The maximum allowed integer value (optional).
    * @returns {boolean} True if the input is a valid integer within the range, false otherwise.
    */
-  static isInteger(input, min = -Infinity, max = Infinity) {
+  static isInteger(input, min = -Number.MIN_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER) {
     // Validate input as an integer using Number.isInteger
     if (!Number.isInteger(input)) {
       return false;
@@ -34,6 +34,10 @@ export default class ValidationUtils {
       new URL(url);
     } catch (error) {
       return false;
+    }
+
+    if (!url.split('/').pop().includes('.')) {
+      return true;
     }
 
     // Extract the file extension from the URL
