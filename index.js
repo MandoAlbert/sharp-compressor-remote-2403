@@ -1,10 +1,10 @@
 import 'dotenv/config'
 import express from 'express'
-import CompressorHandler from '../request-handlers/compressor.handler.js';
-import AppConst from '../shared/app.const.js';
-import CleanupUtils from '../app_modules/CleanupUtils.js';
-import AuthMiddleware from '../auth/auth.middleware.js'
-import LogsHandler from '../request-handlers/logs.handler.js';
+import CompressorHandler from './request-handlers/compressor.handler.js';
+import AppConst from './shared/app.const.js';
+import CleanupUtils from './app_modules/CleanupUtils.js';
+import AuthMiddleware from './auth/auth.middleware.js'
+import LogsHandler from './request-handlers/logs.handler.js';
 
 const app = express();
 
