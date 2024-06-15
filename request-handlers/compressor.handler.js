@@ -97,7 +97,9 @@ export default class CompressorHandler {
         originalSize: AppUtils.formatSize(result.originalSize),
         outputSizeBytes: result.compressSize,
         outputSize: AppUtils.formatSize(result.compressSize),
+        savedBytes: result.sizeDiff,
         saved: AppUtils.formatSize(result.sizeDiff),
+        compressRatio: Number((result.compressSize / result.originalSize).toFixed(2)),
       }
     }
 
