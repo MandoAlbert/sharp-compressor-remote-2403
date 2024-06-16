@@ -5,11 +5,13 @@ import AppConst from './shared/app.const.js';
 import CleanupUtils from './app_modules/CleanupUtils.js';
 import AuthMiddleware from './auth/auth.middleware.js'
 import LogsHandler from './request-handlers/logs.handler.js';
+import StatusMonitor from 'express-status-monitor';
 
 const app = express();
 
 // ----- * app use * -----
 
+app.use(StatusMonitor());
 app.use(express.json());
 app.use(express.static('public'));
 

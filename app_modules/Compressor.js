@@ -28,6 +28,7 @@ export default class Compressor {
       }
       const filename = `img_${new Date().getTime()}.${ext}`;
       try {
+        console.log(`>> Downloading: ${url}`);
         await DownloadUtils.downloadFile(url, `${AppConst.sourceDir}/${filename}`);
         CacheUtils.setCache(url, filename);
         targetFiles.push(filename);
@@ -71,7 +72,7 @@ export default class Compressor {
       const inputFile = `${file}`;
       const outputFile = `${itemPrefix}${namingTemplate ? namingTemplate + (i + 1) : image.filename}.jpg`;
 
-      console.log(`>> [${i + 1}/${totalCount}] Processing: ${inputFile}`);
+      console.log(`>> Processing: ${inputFile}`);
 
       const info = await ImageUtils.toJPEG(
         `${inputPath}/${inputFile}`,

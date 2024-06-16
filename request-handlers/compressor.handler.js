@@ -35,14 +35,15 @@ export default class CompressorHandler {
       }
 
       // Schedule a Clean up
-      setTimeout(() => {
-        if (results && results.length) {
-          CleanupUtils.cleanup([
-            `${AppConst.sourceDir}/${results[0].source}`,
-            `${AppConst.outputDir}/${results[0].output}`,
-          ]);
-        }
-      }, AppDefaults.compressor.timeout * 1000);
+      if (results && results.length) {
+        const paths = [
+          `${AppConst.sourceDir}/${results[0].source}`,
+          `${AppConst.outputDir}/${results[0].output}`,
+        ];
+        setTimeout(() => {
+          CleanupUtils.cleanup(paths);
+        }, AppDefaults.compressor.timeout * 1000);
+      }
     } catch (error) {
       IOUtils.logError(error.stack, "Unexpected error");
       response = { error: "Unexpected error" }
